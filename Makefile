@@ -7,6 +7,9 @@ LINUXINCLUDE += -I$(srctree.nvidia-oot)/include
 subdir-ccflags-y += -Werror
 subdir-ccflags-y += -Wmissing-prototypes
 
+# PCIE DMA EPF core deinit not implemented in core kernel
+subdir-ccflags-y += -DNV_PCIE_DMA_EPF_CORE_DEINIT_NOT_AVAILABLE
+
 ifeq ($(CONFIG_TEGRA_VIRTUALIZATION),y)
 subdir-ccflags-y += -DCONFIG_TEGRA_VIRTUALIZATION
 endif
