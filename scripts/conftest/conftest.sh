@@ -7351,6 +7351,23 @@ compile_test() {
 
             compile_check_conftest "$CODE" "PCI_EPC_IRQ_TYPE_ENUM_PRESENT" "" "types"
         ;;
+
+        pci_epc_event_ops_struct_has_core_deinit)
+            #
+            # Determine if the pci_epc_event_ops struct has the core_deinit function.
+            #
+            # Added by commit 3d99b5acdd3191c ("NVIDIA: SAUCE: PCI: endpoint: Add core_deinit()
+            # callback support") from Nvidia PCI improvement.
+            #
+            CODE="
+            #include <linux/pci-epf.h>
+            int conftest_pci_epc_event_ops_struct_has_core_deinit(void) {
+                return offsetof(struct pci_epc_event_ops, core_deinit);
+            }"
+
+            compile_check_conftest "$CODE" "NV_PCI_EPC_EVENT_OPS_STRUCT_HAS_CORE_DEINIT" "" "types"
+        ;;
+
         register_shrinker_has_fmt_arg)
             #
             # Determine if the 'register_shrinker' function
