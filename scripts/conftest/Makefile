@@ -142,6 +142,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += pwm_ops_struct_has_owner
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pci_disable_pcie_error_reporting
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pci_enable_pcie_error_reporting
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pci_epf_driver_struct_probe_has_id_arg
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += pci_epc_irq_type_enum_present
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += register_shrinker_has_fmt_arg
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += shrinker_alloc
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += slab_mem_spread
