@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2019-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved */
+/* Copyright (c) 2019-2024, NVIDIA CORPORATION & AFFILIATES. All rights reserved */
 
 #ifndef ETHER_LINUX_H
 #define ETHER_LINUX_H
@@ -576,7 +576,7 @@ struct ether_priv_data {
 	struct ether_vm_irq_data *vm_irq_data;
 #ifdef ETHER_PAGE_POOL
 	/** Pointer to page pool */
-	struct page_pool *page_pool;
+	struct page_pool *page_pool[OSI_MGBE_MAX_NUM_CHANS];
 #endif
 #ifdef CONFIG_DEBUG_FS
 	/** Debug fs directory pointer */
