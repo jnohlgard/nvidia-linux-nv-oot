@@ -139,6 +139,7 @@ NV_CONFTEST_FUNCTION_COMPILE_TESTS += gpio_device_find
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += gpio_device_get_chip
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pde_data
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pwm_chip_struct_has_base_arg
+NV_CONFTEST_FUNCTION_COMPILE_TESTS += pwm_chip_struct_has_struct_device
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pwm_ops_struct_has_owner
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pci_disable_pcie_error_reporting
 NV_CONFTEST_FUNCTION_COMPILE_TESTS += pci_enable_pcie_error_reporting
