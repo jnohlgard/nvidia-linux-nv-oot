@@ -3,6 +3,8 @@
 
 #define pr_fmt(fmt)	"nvscic2c-pcie: pci-client: " fmt
 
+#include <nvidia/conftest.h>
+
 #include <linux/dma-buf.h>
 #include <linux/dma-map-ops.h>
 #include <linux/errno.h>
@@ -246,7 +248,12 @@ allocate_edma_rx_desc_iova(struct pci_client_t *ctx)
 		goto err;
 	}
 	prot = (IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE);
-	ret = iommu_map(ctx->domain, ctx->edma_ch_desc_iova, phys_addr, EDMA_CH_DESC_SZ, prot);
+	ret = iommu_map(ctx->domain, ctx->edma_ch_desc_iova, phys_addr,
+#if defined(NV_IOMMU_MAP_HAS_GFP_ARG)
+		EDMA_CH_DESC_SZ, prot, GFP_KERNEL);
+#else
+		EDMA_CH_DESC_SZ, prot);
+#endif
 	if (ret) {
 		pr_err("pci client failed to map iova to 60K physical backing\n");
 		goto err;
@@ -408,7 +415,12 @@ pci_client_map_addr(void *pci_client_h, u64 to_iova, phys_addr_t paddr,
 	if (WARN_ON(!ctx || !to_iova || !paddr || !size))
 		return -EINVAL;
 
-	return iommu_map(ctx->domain, to_iova, paddr, size, prot);
+	return iommu_map(ctx->domain, to_iova, paddr, size,
+#if defined(NV_IOMMU_MAP_HAS_GFP_ARG)
+		prot, GFP_KERNEL);
+#else
+		prot);
+#endif
 }
 
 size_t

@@ -321,7 +321,11 @@ static void tvnet_ep_alloc_empty_buffers(struct pci_epf_tvnet *tvnet)
 		}
 
 		ret = iommu_map(domain, iova, page_to_phys(page), PAGE_SIZE,
+#if defined(NV_IOMMU_MAP_HAS_GFP_ARG)
+				IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
+#else
 				IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE);
+#endif
 		if (ret < 0) {
 			dev_err(tvnet->fdev, "%s: iommu_map(RAM) failed: %d\n",
 				__func__, ret);
@@ -1237,7 +1241,11 @@ static int tvnet_ep_pci_epf_setup_irqsp(struct pci_epf_tvnet *tvnet)
 	syncpt_addr = nvhost_interrupt_syncpt_get_syncpt_addr(ctrl_irqsp->is);
 #endif
 	ret = iommu_map(domain, amap->iova, syncpt_addr, PAGE_SIZE,
+#if defined(NV_IOMMU_MAP_HAS_GFP_ARG)
+			IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
+#else
 			IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE);
+#endif
 	if (ret < 0) {
 		dev_err(fdev, "%s: iommu_map of ctrlsp mem failed: %d\n",
 			__func__, ret);
@@ -1256,7 +1264,11 @@ static int tvnet_ep_pci_epf_setup_irqsp(struct pci_epf_tvnet *tvnet)
 	syncpt_addr = nvhost_interrupt_syncpt_get_syncpt_addr(data_irqsp->is);
 #endif
 	ret = iommu_map(domain, amap->iova + PAGE_SIZE, syncpt_addr, PAGE_SIZE,
+#if defined(NV_IOMMU_MAP_HAS_GFP_ARG)
+			IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
+#else
 			IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE);
+#endif
 	if (ret < 0) {
 		dev_err(fdev, "%s: iommu_map of datasp mem failed: %d\n",
 			__func__, ret);
@@ -1323,7 +1335,11 @@ static int tvnet_ep_alloc_single_page_bar0_mem(struct pci_epf *epf,
 	}
 
 	ret = iommu_map(domain, amap->iova, page_to_phys(amap->page), PAGE_SIZE,
+#if defined(NV_IOMMU_MAP_HAS_GFP_ARG)
+			IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
+#else
 			IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE);
+#endif
 	if (ret < 0) {
 		dev_err(tvnet->fdev, "%s: type: %d iommu_map(RAM) failed: %d\n",
 			__func__, type, ret);
@@ -1404,7 +1420,11 @@ static int tvnet_ep_alloc_multi_page_bar0_mem(struct pci_epf *epf,
 	}
 
 	ret = iommu_map(domain, amap->iova, page_to_phys(amap->page),
+#if defined(NV_IOMMU_MAP_HAS_GFP_ARG)
+			amap->size, IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
+#else
 			amap->size, IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE);
+#endif
 	if (ret < 0) {
 		dev_err(tvnet->fdev, "%s: iommu_map(RAM) failed: %d\n",
 			__func__, ret);
