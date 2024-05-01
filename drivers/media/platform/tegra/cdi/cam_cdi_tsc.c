@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All Rights Reserved. */
+/* Copyright (c) 2023-2024, NVIDIA CORPORATION & AFFILIATES. All Rights Reserved. */
 /*
  * cam_cdi_tsc.c - tsc driver.
  */
@@ -147,6 +147,8 @@ struct tsc_signal_controller {
 	} debugfs;
 	const struct tsc_signal_controller_features *features;
 	struct list_head generators;
+	bool opened;
+
 };
 
 static const struct tsc_signal_controller_features tegra234_tsc_features = {
@@ -458,22 +460,44 @@ static void cdi_tsc_debugfs_remove(struct tsc_signal_controller *controller)
 
 static int cdi_tsc_chardev_open(struct inode *inode, struct file *file)
 {
-    pr_info("%s:Device opened\n", __func__);
+	struct tsc_signal_controller *controller = dev_get_drvdata(tsc_charDevice);
+	int err = 0;
 
-    /* Set External Fsync */
-    Hawk_Owl_Fsync_program(EXTERNAL_FSYNC);
+	if (controller->opened)
+		return -EBUSY;
 
-    return 0;
+	/* Make sure device opened only once */
+	controller->opened = true;
+
+	/* Set External Fsync */
+	err = Hawk_Owl_Fsync_program(EXTERNAL_FSYNC);
+	if (err)
+		controller->opened = false;
+	else
+		dev_dbg(controller->dev, "%s:Device opened successfully!! \n", __func__);
+
+	return err;
 }
 
 static int cdi_tsc_chardev_release(struct inode *inode, struct file *file)
 {
-	pr_info("%s:Device closed\n", __func__);
+	struct tsc_signal_controller *controller = dev_get_drvdata(tsc_charDevice);
+	int err = -EFAULT;
+
+	/* To make sure whenever the device is closed, tsc is also stopped
+	 * to avoid inconsistency behaviour at app level i.e to avoid out of sync.
+         */
+	err = cdi_tsc_stop_generators(controller);
+	if (err)
+		return err;
 
 	/* Set back to Internal Fsync */
-	Hawk_Owl_Fsync_program(INTERNAL_FSYNC);
+	err = Hawk_Owl_Fsync_program(INTERNAL_FSYNC);
 
-	return 0;
+	controller->opened = false;
+	dev_dbg(controller->dev, "%s Device closed ..\n", __func__);
+
+	return err;
 }
 
 static long cdi_tsc_chardev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
@@ -520,6 +544,7 @@ static int cdi_tsc_probe(struct platform_device *pdev)
 	if (!controller)
 		return -ENOMEM;
 
+	controller->opened = false;
 	controller->dev = &pdev->dev;
 	controller->features = of_device_get_match_data(&pdev->dev);
 	if (controller->features == NULL) {
