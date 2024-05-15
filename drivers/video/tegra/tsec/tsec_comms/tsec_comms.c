@@ -111,8 +111,8 @@ static int tsec_comms_send_getctxt_cmd(callback_func_t cb_func, void *cb_ctx)
 /* Context retrieved, shutdown tsec now */
 static void tsec_comms_process_getctxt_msg(void)
 {
-	tsec_plat_poweroff();
 	s_tsec_state = TSEC_STATE_SHUTDOWN;
+	tsec_plat_poweroff();
 }
 
 /* Power on tsec with context information */
@@ -122,8 +122,8 @@ static void tsec_comms_poweron_with_context(void)
 
 	bootInfo->bootWithContextFlag = 1;
 	bootInfo->bootContextOffset = s_tsec_context_gscco_offset;
-	tsec_plat_poweron();
 	s_tsec_state = TSEC_STATE_BOOTED_WITH_CONTEXT;
+	tsec_plat_poweron();
 }
 
 /* Clear flags after power on with context done */
