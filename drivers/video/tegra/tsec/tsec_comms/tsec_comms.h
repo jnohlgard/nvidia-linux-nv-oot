@@ -10,6 +10,22 @@
 
 typedef void (*callback_func_t)(void *, void *);
 
+#define CHECK_COMMS_INIT_VOID() \
+	do { \
+		if (!s_tsec_comms_initialised) { \
+			plat_print(LVL_ERR, "%s: Communication with TSEC not supported\n", __func__); \
+			return; \
+		} \
+	} while (false)
+
+#define CHECK_COMMS_INIT(RETVAL) \
+	do { \
+		if (!s_tsec_comms_initialised) { \
+			plat_print(LVL_ERR, "%s: Communication with TSEC not supported\n", __func__); \
+			return RETVAL; \
+		} \
+	} while (false)
+
 /* -------- Tsec driver internal functions to be called by platform dependent code --------- */
 
 /* @brief: Initialises IPC CO and reserves pages on the same.

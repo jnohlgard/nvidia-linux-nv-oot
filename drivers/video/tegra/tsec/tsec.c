@@ -395,6 +395,9 @@ static int tsec_module_init(struct platform_device *dev)
 	/* disable the clocks after resetting the module */
 	tsec_disable_clk(pdata);
 
+	/* read the support_comms property*/
+	pdata->is_comms_supported = of_property_read_bool((&dev->dev)->of_node, "support_comms");
+
 	return 0;
 }
 

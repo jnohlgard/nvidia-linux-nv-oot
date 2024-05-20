@@ -58,6 +58,7 @@ enum TSEC_STATE s_tsec_state;
  */
 static bool s_init_msg_rcvd;
 static u8 s_init_tsec_msg[TSEC_MAX_MSG_SIZE];
+static bool s_tsec_comms_initialised;
 
 /*
  * Callback function to shutdown external firmware
@@ -165,6 +166,8 @@ int tsec_comms_shutdown(void)
 {
 	int status = -TSEC_EINVAL;
 
+	CHECK_COMMS_INIT(-TSEC_EOPNOTSUPP);
+
 	if (!is_cmd_pending()) {
 		status = tsec_comms_send_getctxt_cmd(signal_shutdown_done, NULL);
 		if (PLAT_DOWN_SEMA(&s_shutdown_sema))
@@ -177,6 +180,7 @@ EXPORT_SYMBOL_COMMS(tsec_comms_shutdown);
 /* External fw shutdown needed before we reboot tsec hdcp fw */
 void tsec_comms_register_shutdown_callback(shutdown_callback_func_t func)
 {
+	CHECK_COMMS_INIT_VOID();
 	s_ext_fw_shutdown_cb = func;
 }
 EXPORT_SYMBOL_COMMS(tsec_comms_register_shutdown_callback);
@@ -368,6 +372,8 @@ void tsec_comms_drain_msg(bool invoke_cb)
 	u8 tsec_msg[TSEC_MAX_MSG_SIZE];
 	bool shutdown_tsec = false;
 
+	CHECK_COMMS_INIT_VOID();
+
 	msgq_head_reg = tsec_msgq_head_r(TSEC_MSG_QUEUE_PORT);
 	msgq_tail_reg = tsec_msgq_tail_r(TSEC_MSG_QUEUE_PORT);
 	msg_hdr =  (struct RM_FLCN_QUEUE_HDR *)(tsec_msg);
@@ -523,8 +529,6 @@ EXIT:
 
 void tsec_comms_initialize(u64 ipc_co_va, u64 ipc_co_va_size)
 {
-	static bool s_tsec_comms_initialised;
-
 	if (!s_tsec_comms_initialised) {
 		/* Set IPC CO Info before enabling Msg Interrupts from TSEC to CCPLEX */
 		s_ipc_gscco_base = ipc_co_va;
@@ -554,6 +558,8 @@ void *tsec_comms_get_gscco_page(u32 page_number, u32 *gscco_offset)
 {
 	u8 *page_va;
 
+	CHECK_COMMS_INIT(NULL);
+
 	if (!s_ipc_gscco_page_base || (page_number >= s_ipc_gscco_page_count)) {
 		plat_print(LVL_ERR,
 			"%s: No reserved memory for Page %d\n",
@@ -577,6 +583,8 @@ void *tsec_comms_alloc_mem_from_gscco(u32 size_in_bytes, u32 *gscco_offset)
 	void *page_va;
 	u32 page_number;
 	u64 mask;
+
+	CHECK_COMMS_INIT(NULL);
 
 	/* memory allocated must fit within 1 page */
 	if (size_in_bytes > s_ipc_gscco_page_size) {
@@ -618,6 +626,8 @@ void tsec_comms_free_gscco_mem(void *page_va)
 	u64 page_number = (page_addr - gscco_page_start) /
 		s_ipc_gscco_page_size;
 
+	CHECK_COMMS_INIT_VOID();
+
 	if ((page_addr >= gscco_page_start) &&
 	    (page_addr < gscco_page_end) &&
 	    (!(page_addr % s_ipc_gscco_page_size)))
@@ -641,6 +651,8 @@ int tsec_comms_send_cmd(void *cmd, u32 queue_id,
 	static u32 sCmdq_start;
 	struct RM_FLCN_QUEUE_HDR *cmd_hdr;
 	struct RM_FLCN_QUEUE_HDR hdr;
+
+	CHECK_COMMS_INIT(-TSEC_EOPNOTSUPP);
 
 	if (!s_init_msg_rcvd) {
 		plat_print(LVL_ERR, "TSEC RISCV hasn't booted successfully\n");
@@ -763,6 +775,8 @@ int tsec_comms_set_init_cb(callback_func_t cb_func, void *cb_ctx)
 {
 	int err = 0;
 
+	CHECK_COMMS_INIT(-TSEC_EOPNOTSUPP);
+
 	tsec_plat_acquire_comms_mutex();
 
 	if (s_callbacks[RM_GSP_UNIT_INIT].cb_func) {
@@ -805,6 +819,8 @@ EXPORT_SYMBOL_COMMS(tsec_comms_set_init_cb);
 
 void tsec_comms_clear_init_cb(void)
 {
+	CHECK_COMMS_INIT_VOID();
+
 	tsec_plat_acquire_comms_mutex();
 	s_callbacks[RM_GSP_UNIT_INIT].cb_func = NULL;
 	s_callbacks[RM_GSP_UNIT_INIT].cb_ctx  = NULL;

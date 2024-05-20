@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * Copyright (c) 2022-2023, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2022-2024, NVIDIA CORPORATION.  All rights reserved.
  *
  * Tegra TSEC Module Support
  */
@@ -47,7 +47,8 @@ struct tsec_device_data {
 	char *riscv_desc_bin;
 	/* name of riscv image binary */
 	char *riscv_image_bin;
-
+	/* flag to denote whether comms is supported */
+	bool is_comms_supported;
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *debug_root;
 #endif /* CONFIG_DEBUG_FS */

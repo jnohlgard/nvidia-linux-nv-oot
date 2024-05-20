@@ -26,8 +26,9 @@ extern struct platform_device *g_tsec;
 
 #define EXPORT_SYMBOL_COMMS(sym) EXPORT_SYMBOL(sym)
 
-#define TSEC_EINVAL EINVAL
-#define TSEC_ENODEV ENODEV
+#define TSEC_EINVAL           EINVAL
+#define TSEC_ENODEV           ENODEV
+#define TSEC_EOPNOTSUPP       EOPNOTSUPP
 
 #define plat_print(level, fmt, ...) \
 do { \
