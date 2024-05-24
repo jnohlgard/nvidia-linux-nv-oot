@@ -2,4 +2,5 @@
 # Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 
 obj-m += r8168/
+obj-m += r8126/
 
