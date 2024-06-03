@@ -4,6 +4,8 @@
  * max929x.c - max929x IO Expander driver
  */
 
+#include <nvidia/conftest.h>
+
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
 #include <media/camera_common.h>
@@ -82,8 +84,12 @@ static  struct regmap_config max929x_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
+#if defined(NV_I2C_DRIVER_STRUCT_PROBE_WITHOUT_I2C_DEVICE_ID_ARG) /* Linux 6.3 */
+static int max929x_probe(struct i2c_client *client)
+#else
 static int max929x_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
+#endif
 {
 	struct device dev = client->dev;
 	struct device_node *np = (&dev)->of_node;
@@ -142,14 +148,20 @@ static int max929x_probe(struct i2c_client *client,
 	return 0;
 }
 
+#if defined(NV_I2C_DRIVER_STRUCT_REMOVE_RETURN_TYPE_INT) /* Linux 6.1 */
 static int max929x_remove(struct i2c_client *client)
+#else
+static void max929x_remove(struct i2c_client *client)
+#endif
 {
 	struct device dev = client->dev;
 
 	gpio_set_value(priv->pwdn_gpio, 0);
 	dev_dbg(&dev, "%s: \n", __func__);
 
+#if defined(NV_I2C_DRIVER_STRUCT_REMOVE_RETURN_TYPE_INT) /* Linux 6.1 */
 	return 0;
+#endif
 }
 
 static const struct i2c_device_id max929x_id[] = {

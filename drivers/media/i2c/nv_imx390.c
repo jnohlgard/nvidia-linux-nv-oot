@@ -6,6 +6,8 @@
  *
  */
 
+#include <nvidia/conftest.h>
+
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/gpio.h>
@@ -215,7 +217,7 @@ static int imx390_power_on(struct camera_common_data *s_data)
 	}
 
 	if (gpio_is_valid(pw->reset_gpio)) {
-		if (gpio_cansleep(pw->reset_gpio))
+		if (gpiod_cansleep(gpio_to_desc(pw->reset_gpio)))
 			gpio_set_value_cansleep(pw->reset_gpio, 0);
 		else
 			gpio_set_value(pw->reset_gpio, 0);
@@ -248,7 +250,7 @@ static int imx390_power_on(struct camera_common_data *s_data)
 
 skip_power_seqn:
 	if (gpio_is_valid(pw->reset_gpio)) {
-		if (gpio_cansleep(pw->reset_gpio))
+		if (gpiod_cansleep(gpio_to_desc(pw->reset_gpio)))
 			gpio_set_value_cansleep(pw->reset_gpio, 1);
 		else
 			gpio_set_value(pw->reset_gpio, 1);
@@ -291,7 +293,7 @@ static int imx390_power_off(struct camera_common_data *s_data)
 		}
 	} else {
 		if (pw->reset_gpio) {
-			if (gpio_cansleep(pw->reset_gpio))
+			if (gpiod_cansleep(gpio_to_desc(pw->reset_gpio)))
 				gpio_set_value_cansleep(pw->reset_gpio, 0);
 			else
 				gpio_set_value(pw->reset_gpio, 0);
@@ -516,8 +518,12 @@ static const struct v4l2_subdev_internal_ops imx390_subdev_internal_ops = {
 	.open = imx390_open,
 };
 
+#if defined(NV_I2C_DRIVER_STRUCT_PROBE_WITHOUT_I2C_DEVICE_ID_ARG) /* Linux 6.3 */
+static int imx390_probe(struct i2c_client *client)
+#else
 static int imx390_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
+#endif
 {
 	struct device *dev = &client->dev;
 	struct tegracam_device *tc_dev;
@@ -572,7 +578,11 @@ static int imx390_probe(struct i2c_client *client,
 	return 0;
 }
 
+#if defined(NV_I2C_DRIVER_STRUCT_REMOVE_RETURN_TYPE_INT) /* Linux 6.1 */
 static int imx390_remove(struct i2c_client *client)
+#else
+static void imx390_remove(struct i2c_client *client)
+#endif
 {
 	struct camera_common_data *s_data = to_camera_common_data(&client->dev);
 	struct imx390 *priv = (struct imx390 *)s_data->priv;
@@ -580,7 +590,9 @@ static int imx390_remove(struct i2c_client *client)
 	tegracam_v4l2subdev_unregister(priv->tc_dev);
 	tegracam_device_unregister(priv->tc_dev);
 
+#if defined(NV_I2C_DRIVER_STRUCT_REMOVE_RETURN_TYPE_INT) /* Linux 6.1 */
 	return 0;
+#endif
 }
 
 static const struct i2c_device_id imx390_id[] = {
