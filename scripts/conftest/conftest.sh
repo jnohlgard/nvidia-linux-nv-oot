@@ -7659,6 +7659,26 @@ compile_test() {
             compile_check_conftest "$CODE" "NV_SND_SOC_DAI_OPS_STRUCT_HAS_PROBE_PRESENT" "" "types"
         ;;
 
+        snd_soc_dai_ops_struct_set_channel_map_has_const_slot_args)
+            #
+            # Determine if the ASoC set_channel_map() has constant 'tx_slot' and
+            # 'rx_slot' arguments.
+            #
+            # Commit 965cc040bf06 ("ASoC: Constify channel mapping array arguments in
+            # set_channel_map()") updated the 'tx_slot' and 'rx_slot' arguments to be
+            # constant in Linux v6.11.
+            #
+            CODE="
+            #include <sound/soc.h>
+            int conftest_snd_soc_dai_ops(struct snd_soc_dai_ops *ops) {
+                int (*fn)(struct snd_soc_dai *dai, unsigned int tx_num,
+                   const unsigned int *tx_slot, unsigned int rx_num,
+                    const unsigned int *rx_slot) = ops->set_channel_map;
+            }"
+
+            compile_check_conftest "$CODE" "NV_SND_SOC_DAI_OPS_STRUCT_SET_CHANNEL_MAP_HAS_CONST_SLOT_ARGS" "" "types"
+        ;;
+
         snd_soc_of_get_dai_name_has_index_arg)
             #
             # Determine if the function 'snd_soc_of_get_dai_name()' has an index argument.

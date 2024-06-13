@@ -369,8 +369,13 @@ static int tegra210_amx_out_hw_params(struct snd_pcm_substream *substream,
 }
 
 static int tegra210_amx_set_channel_map(struct snd_soc_dai *dai,
+#if defined (NV_SND_SOC_DAI_OPS_STRUCT_SET_CHANNEL_MAP_HAS_CONST_SLOT_ARGS)
+				unsigned int tx_num, const unsigned int *tx_slot,
+				unsigned int rx_num, const unsigned int *rx_slot)
+#else
 				unsigned int tx_num, unsigned int *tx_slot,
 				unsigned int rx_num, unsigned int *rx_slot)
+#endif
 {
 	struct device *dev = dai->dev;
 	struct tegra210_amx *amx = snd_soc_dai_get_drvdata(dai);
