@@ -597,12 +597,12 @@ next_page:
 
 bool is_nvmap_memory_available(size_t size, uint32_t heap)
 {
-	unsigned long total_num_pages;
 	unsigned int carveout_mask = NVMAP_HEAP_CARVEOUT_MASK;
 	unsigned int iovmm_mask = NVMAP_HEAP_IOVMM;
 	struct nvmap_device *dev = nvmap_dev;
 	bool heap_present = false;
 	int i;
+	unsigned long free_mem = 0;
 
 	if (!heap)
 		return false;
@@ -618,15 +618,15 @@ bool is_nvmap_memory_available(size_t size, uint32_t heap)
 	}
 
 	if (heap & iovmm_mask) {
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
-		total_num_pages = totalram_pages();
-#else
-		total_num_pages = totalram_pages;
-#endif
-		if ((size >> PAGE_SHIFT) > total_num_pages) {
+		if (system_heap_free_mem(&free_mem)) {
+			pr_debug("Call to system_heap_free_mem failed\n");
+			return false;
+		}
+
+		if (size > (free_mem & PAGE_MASK)) {
 			pr_debug("Requested size is more than available memory\n");
 			pr_debug("Requested size : %lu B, Available memory : %lu B\n", size,
-					total_num_pages << PAGE_SHIFT);
+					free_mem & PAGE_MASK);
 			return false;
 		}
 		return true;
@@ -642,10 +642,10 @@ bool is_nvmap_memory_available(size_t size, uint32_t heap)
 
 		heap_present = true;
 		h = co_heap->carveout;
-		if (size > h->free_size) {
+		if (size > (h->free_size & PAGE_MASK)) {
 			pr_debug("Requested size is more than available memory");
 			pr_debug("Requested size : %lu B, Available memory : %lu B\n", size,
-					h->free_size);
+					(h->free_size & PAGE_MASK));
                         return false;
                 }
 		break;
