@@ -15,7 +15,7 @@
 #include <linux/vmalloc.h>
 #include <linux/tegra_vnet.h>
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 #include <linux/dma-fence.h>
 #include <linux/host1x-next.h>
 #include <linux/iommu.h>
@@ -52,7 +52,7 @@ struct bar0_amap {
 	dma_addr_t phy;
 };
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 /* syncpoint handling. */
 struct syncpt_t {
 	u32 id;
@@ -88,7 +88,7 @@ struct syncpt_t {
 #endif
 
 struct irqsp_data {
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	/* Notification. */
 	struct syncpt_t syncpt;
 #else
@@ -140,7 +140,7 @@ struct pci_epf_tvnet {
 	struct tvnet_counter h2ep_full;
 	struct tvnet_counter ep2h_empty;
 	struct tvnet_counter ep2h_full;
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	/* DRV_MODE specific.*/
 	struct pci_epc *epc;
 	struct platform_device *host1x_pdev;
@@ -966,7 +966,7 @@ static void tvnet_ep_setup_dma(struct pci_epf_tvnet *tvnet)
 }
 #endif
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 /* Returns aperture offset of syncpoint on SHIM_BASE. */
 static inline u64 get_syncpt_shim_offset(u32 id)
 {
@@ -1048,7 +1048,7 @@ fence_do_work(struct syncpt_t *syncpt)
 
 static void tvnet_ep_ctrl_irqsp_work(struct work_struct *work)
 {
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	struct syncpt_t *syncpt =
 		container_of(work, struct syncpt_t, work);
 
@@ -1080,14 +1080,14 @@ static void tvnet_ep_ctrl_irqsp_callback(void *private_data)
 	if (!tvnet_ivc_full(&tvnet->h2ep_empty) &&
 	    (tvnet->os_link_state == OS_LINK_STATE_UP))
 		tvnet_ep_alloc_empty_buffers(tvnet);
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 	schedule_work(&data_irqsp->reprime_work);
 #endif
 }
 
 static void tvnet_ep_data_irqsp_work(struct work_struct *work)
 {
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	struct syncpt_t *syncpt =
 		container_of(work, struct syncpt_t, work);
 
@@ -1107,7 +1107,7 @@ static void tvnet_ep_data_irqsp_callback(void *private_data)
 
 	if (tvnet_ivc_rd_available(&tvnet->h2ep_full))
 		napi_schedule(&tvnet->napi);
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 	else
 		schedule_work(&data_irqsp->reprime_work);
 #endif
@@ -1117,7 +1117,7 @@ static int tvnet_ep_poll(struct napi_struct *napi, int budget)
 {
 	struct pci_epf_tvnet *tvnet = container_of(napi, struct pci_epf_tvnet,
 						   napi);
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 	struct irqsp_data *data_irqsp = tvnet->data_irqsp;
 #endif
 	int work_done;
@@ -1125,7 +1125,7 @@ static int tvnet_ep_poll(struct napi_struct *napi, int budget)
 	work_done = tvnet_ep_process_h2ep_msg(tvnet);
 	if (work_done < budget) {
 		napi_complete(napi);
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 		schedule_work(&data_irqsp->reprime_work);
 #endif
 	}
@@ -1145,7 +1145,7 @@ static int tvnet_ep_pci_epf_setup_irqsp(struct pci_epf_tvnet *tvnet)
 	struct irq_md *irq;
 	phys_addr_t syncpt_addr;
 	int ret;
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	struct host1x *host1x = NULL;
 	struct syncpt_t *syncpt = NULL;
 
@@ -1161,7 +1161,7 @@ static int tvnet_ep_pci_epf_setup_irqsp(struct pci_epf_tvnet *tvnet)
 		goto fail;
 	}
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	syncpt = &ctrl_irqsp->syncpt;
 	syncpt->sp = host1x_syncpt_alloc(host1x, HOST1X_SYNCPT_CLIENT_MANAGED,
 					 "pcie-ep-vnet-ctrl");
@@ -1211,7 +1211,7 @@ static int tvnet_ep_pci_epf_setup_irqsp(struct pci_epf_tvnet *tvnet)
 		goto free_ctrl_sp;
 	}
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	syncpt = &data_irqsp->syncpt;
 	syncpt->sp = host1x_syncpt_alloc(host1x, HOST1X_SYNCPT_CLIENT_MANAGED,
 					 "pcie-ep-vnet-data");
@@ -1277,7 +1277,7 @@ static int tvnet_ep_pci_epf_setup_irqsp(struct pci_epf_tvnet *tvnet)
 	irq->irq_addr = PAGE_SIZE;
 	irq->irq_type = IRQ_SIMPLE;
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	syncpt_addr = get_syncpt_shim_offset(data_irqsp->syncpt.id);
 	data_irqsp->syncpt.phy_addr = syncpt_addr;
 	data_irqsp->syncpt.size = PAGE_SIZE;
@@ -1305,7 +1305,7 @@ static int tvnet_ep_pci_epf_setup_irqsp(struct pci_epf_tvnet *tvnet)
 free_ctrl_ivoa:
 	iommu_unmap(domain, amap->iova, PAGE_SIZE);
 free_data_sp:
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	host1x_syncpt_put(data_irqsp->syncpt.sp);
 free_ctrl_sp:
 	host1x_syncpt_put(ctrl_irqsp->syncpt.sp);
@@ -1328,7 +1328,7 @@ static void tvnet_ep_pci_epf_destroy_irqsp(struct pci_epf_tvnet *tvnet)
 	iommu_unmap(domain, tvnet->bar0_amap[SIMPLE_IRQ].iova + PAGE_SIZE,
 		    PAGE_SIZE);
 	iommu_unmap(domain, tvnet->bar0_amap[SIMPLE_IRQ].iova, PAGE_SIZE);
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	host1x_syncpt_put(tvnet->data_irqsp->syncpt.sp);
 	host1x_syncpt_put(tvnet->ctrl_irqsp->syncpt.sp);
 #else
@@ -1479,7 +1479,7 @@ static void tvnet_ep_free_multi_page_bar0_mem(struct pci_epf *epf,
 	vfree(amap->virt);
 }
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 static int tvnet_get_host1x_dev(struct pci_epf *epf)
 {
 	struct pci_epc *epc = epf->epc;
@@ -1519,7 +1519,7 @@ static int tvnet_ep_pci_epf_core_init(struct pci_epf *epf)
 	struct pci_epf_bar *epf_bar = &epf->bar[BAR_0];
 	int ret;
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	if (atomic_read(&tvnet->core_initialized)) {
 		pr_err("Received CORE_INIT callback again\n");
 		return -EINVAL;
@@ -1551,7 +1551,7 @@ static int tvnet_ep_pci_epf_core_init(struct pci_epf *epf)
 		return ret;
 	}
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	atomic_set(&tvnet->core_initialized, 1);
 
 #endif
@@ -1560,7 +1560,7 @@ static int tvnet_ep_pci_epf_core_init(struct pci_epf *epf)
 #endif
 
 #if (LINUX_VERSION_CODE > KERNEL_VERSION(4, 15, 0) && \
-	LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+	LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 static int tvnet_ep_pci_epf_notifier(struct notifier_block *nb,
 					    unsigned long val, void *data)
 {
@@ -1599,7 +1599,7 @@ static int tvnet_ep_pci_epf_notifier(struct notifier_block *nb,
 	return NOTIFY_OK;
 }
 #else
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 static int tvnet_ep_pci_epf_linkup(struct pci_epf *epf)
 #else
 static void tvnet_ep_pci_epf_linkup(struct pci_epf *epf)
@@ -1619,7 +1619,7 @@ static void tvnet_ep_pci_epf_linkup(struct pci_epf *epf)
 			 tvnet_ivc_get_rd_cnt(&tvnet->ep2h_full));
 
 	tvnet->pcie_link_status = true;
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	val = readl(tvnet->appl_base + APPL_INTR_EN_L1_8_0);
 	if (val & APPL_INTR_EN_L1_8_EDMA_INT_EN)
 		writel(val & ~APPL_INTR_EN_L1_8_EDMA_INT_EN,
@@ -1630,7 +1630,7 @@ static void tvnet_ep_pci_epf_linkup(struct pci_epf *epf)
 }
 #endif
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 #if defined(NV_PCI_EPC_EVENT_OPS_STRUCT_HAS_CORE_DEINIT)
 static int tvnet_ep_pci_epf_core_deinit(struct pci_epf *epf)
 {
@@ -1696,7 +1696,7 @@ static int tvnet_ep_pci_epf_bind(struct pci_epf *epf)
 	struct bar0_amap *amap;
 	struct tvnet_dma_desc *dma_desc;
 	int ret, size, bitmap_size;
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	unsigned long shift;
 #endif
 	if (!domain) {
@@ -1740,7 +1740,7 @@ static int tvnet_ep_pci_epf_bind(struct pci_epf *epf)
 	if (IS_ERR(tvnet->appl_base))
 		goto fail;
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	tvnet->iovad = (struct iova_domain *)&domain->iova_cookie->iovad;
 
 	shift = iova_shift(tvnet->iovad);
@@ -2010,7 +2010,7 @@ static int tvnet_ep_pci_epf_bind(struct pci_epf *epf)
 					     0xffffffff);
 	dma_desc[DMA_DESC_COUNT].ctrl_reg.ctrl_e.llp = 1;
 
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0))
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 14, 0))
 	nvhost_interrupt_syncpt_prime(tvnet->ctrl_irqsp->is);
 	nvhost_interrupt_syncpt_prime(tvnet->data_irqsp->is);
 
@@ -2045,7 +2045,7 @@ free_irqsp:
 free_bar0_md:
 	tvnet_ep_free_single_page_bar0_mem(epf, META_DATA);
 free_iova:
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	__free_iova(tvnet->iovad, tvnet->iova);
 #else
 	iommu_dma_free_iova(cdev, tvnet->bar0_iova, BAR0_SIZE);
@@ -2054,7 +2054,7 @@ fail:
 	return ret;
 }
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 static void free_fence_resource(struct syncpt_t *syncpt)
 {
 	int ret = 0;
@@ -2087,7 +2087,7 @@ static void tvnet_ep_pci_epf_unbind(struct pci_epf *epf)
 #endif
 	struct pci_epc *epc = epf->epc;
 	struct device *cdev = epc->dev.parent;
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	struct syncpt_t *syncpt = NULL;
 
 	syncpt = &tvnet->ctrl_irqsp->syncpt;
@@ -2117,7 +2117,7 @@ static void tvnet_ep_pci_epf_unbind(struct pci_epf *epf)
 	tvnet_ep_free_multi_page_bar0_mem(epf, EP_MEM);
 	tvnet_ep_pci_epf_destroy_irqsp(tvnet);
 	tvnet_ep_free_single_page_bar0_mem(epf, META_DATA);
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	__free_iova(tvnet->iovad, tvnet->iova);
 	tvnet->bar0_iova = 0x0;
 #else
@@ -2125,7 +2125,7 @@ static void tvnet_ep_pci_epf_unbind(struct pci_epf *epf)
 #endif
 }
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 static const struct pci_epf_device_id tvnet_ep_epf_tvnet_ids[] = {
 	{ .name = "pci_epf_tvnet", },
 	{ },
@@ -2149,7 +2149,7 @@ static int tvnet_ep_epf_tvnet_probe(struct pci_epf *epf)
 	tvnet->fdev = fdev;
 	tvnet->epf = epf;
 
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(5, 14, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 14, 0))
 	epf->event_ops = &tvnet_event_ops;
 #endif
 	tvnet->header.vendorid = PCI_VENDOR_ID_NVIDIA;
