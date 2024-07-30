@@ -3,7 +3,7 @@
  * tegra_asoc_utils.c - Harmony machine ASoC driver
  *
  * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (c) 2010-2023 NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2010-2024 NVIDIA CORPORATION. All rights reserved.
  */
 
 #include <linux/clk.h>
@@ -15,7 +15,9 @@
 
 #include "tegra_asoc_utils.h"
 
+#ifndef MAX
 #define MAX(X, Y) ((X > Y) ? (X) : (Y))
+#endif
 /*
  * this will be used for platforms from Tegra210 onwards.
  * odd rates: sample rates multiple of 11.025kHz
