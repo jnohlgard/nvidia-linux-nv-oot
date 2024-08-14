@@ -715,32 +715,36 @@ static int __init tegra_bl_debuginit_module_init(void)
 	err = tegra_bl_args(bl_prof_dataptr,
 			&tegra_bl_prof_size,
 			&tegra_bl_prof_start);
-
 	if (err != 0)
-		return err;
+		goto err_out;
 
 	err = tegra_bl_args(bl_prof_ro_ptr,
 			&tegra_bl_prof_ro_size,
 			&tegra_bl_prof_ro_start);
-
 	if (err != 0)
-		return err;
+		goto err_out;
 
 	err = tegra_bl_args(bl_debug_data,
 			&tegra_bl_debug_data_size,
 			&tegra_bl_debug_data_start);
-
 	if (err != 0)
-		return err;
+		goto err_out;
 
 	err = tegra_bl_args(boot_cfg_dataptr,
 			&tegra_bl_bcp_size,
 			&tegra_bl_bcp_start);
-
 	if (err != 0)
-		return err;
+		goto err_out;
 
-	return tegra_bootloader_debuginit();
+	err = tegra_bootloader_debuginit();
+	if (err != 0)
+		goto err_out;
+
+	return 0;
+
+err_out:
+	platform_driver_unregister(&tegra_bl_debug_driver);
+	return err;
 }
 
 static void __exit tegra_bl_debuginit_module_exit(void)
