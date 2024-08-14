@@ -394,25 +394,23 @@ static int __init tegra_bootloader_debuginit(void)
 		if (tegra_bl_debug_data_start && tegra_bl_debug_data_size) {
 			tegra_bl_mapped_debug_data_start =
 				phys_to_virt(tegra_bl_debug_data_start);
-			if (!pfn_valid(__phys_to_pfn(tegra_bl_debug_data_start))) {
-				ptr_bl_debug_data_start = ioremap(tegra_bl_debug_data_start,
-						tegra_bl_debug_data_size);
+			ptr_bl_debug_data_start = ioremap(tegra_bl_debug_data_start,
+					tegra_bl_debug_data_size);
 
-				WARN_ON(!ptr_bl_debug_data_start);
-				if (!ptr_bl_debug_data_start) {
-					pr_err("%s: Failed to map tegra_bl_debug_data_start%08x\n",
-					   __func__, (unsigned int)tegra_bl_debug_data_start);
-					goto out_err;
-				}
-
-				pr_info("Remapped tegra_bl_debug_data_start(0x%llx)"
-					" to address(0x%llx), size(0x%llx)\n",
-					(u64)tegra_bl_debug_data_start,
-					(__force u64)ptr_bl_debug_data_start,
-					(u64)tegra_bl_debug_data_size);
-				tegra_bl_mapped_debug_data_start =
-						(__force void *)ptr_bl_debug_data_start;
+			WARN_ON(!ptr_bl_debug_data_start);
+			if (!ptr_bl_debug_data_start) {
+				pr_err("%s: Failed to map tegra_bl_debug_data_start%08x\n",
+				   __func__, (unsigned int)tegra_bl_debug_data_start);
+				goto out_err;
 			}
+
+			pr_info("Remapped tegra_bl_debug_data_start(0x%llx)"
+				" to address(0x%llx), size(0x%llx)\n",
+				(u64)tegra_bl_debug_data_start,
+				(__force u64)ptr_bl_debug_data_start,
+				(u64)tegra_bl_debug_data_size);
+			tegra_bl_mapped_debug_data_start =
+					(__force void *)ptr_bl_debug_data_start;
 		}
 
 		/*
@@ -429,20 +427,18 @@ static int __init tegra_bootloader_debuginit(void)
 
 			tegra_bl_mapped_boot_cfg_start =
 				phys_to_virt(tegra_bl_bcp_start);
-			if (!pfn_valid(__phys_to_pfn(tegra_bl_bcp_start))) {
-				ptr_bl_boot_cfg_start = ioremap(tegra_bl_bcp_start,
-								tegra_bl_bcp_size);
+			ptr_bl_boot_cfg_start = ioremap(tegra_bl_bcp_start,
+							tegra_bl_bcp_size);
 
-				WARN_ON(!ptr_bl_boot_cfg_start);
-				if (!ptr_bl_boot_cfg_start) {
-					pr_err("%s: Failed to map tegra_bl_prof_start %08x\n",
-						__func__,
-						(unsigned int)tegra_bl_bcp_start);
-					goto out_err;
-				}
-				tegra_bl_mapped_boot_cfg_start =
-					(__force void *)ptr_bl_boot_cfg_start;
+			WARN_ON(!ptr_bl_boot_cfg_start);
+			if (!ptr_bl_boot_cfg_start) {
+				pr_err("%s: Failed to map tegra_bl_prof_start %08x\n",
+					__func__,
+					(unsigned int)tegra_bl_bcp_start);
+				goto out_err;
 			}
+			tegra_bl_mapped_boot_cfg_start =
+				(__force void *)ptr_bl_boot_cfg_start;
 		}
 	}
 #endif /* CONFIG_DEBUG_FS */
@@ -469,24 +465,21 @@ static int __init tegra_bootloader_debuginit(void)
 		goto out_err;
 	}
 
-	if (!pfn_valid(__phys_to_pfn(tegra_bl_prof_start))) {
-		ptr_bl_prof_carveout = ioremap(tegra_bl_prof_start, tegra_bl_prof_size);
-		if (!ptr_bl_prof_carveout) {
-			pr_err("%s: failed to map tegra_bl_prof_start\n", __func__);
-			goto out_err;
-		}
-
-		pr_info("Remapped tegra_bl_prof_start(0x%llx) "
-			"to address 0x%llx, size(0x%llx)\n",
-			(u64)tegra_bl_prof_start,
-			(__force u64)ptr_bl_prof_carveout,
-			(u64)tegra_bl_prof_size);
-
-		tegra_bl_mapped_prof_start = (__force void *)ptr_bl_prof_carveout;
+	ptr_bl_prof_carveout = ioremap(tegra_bl_prof_start, tegra_bl_prof_size);
+	if (!ptr_bl_prof_carveout) {
+		pr_err("%s: failed to map tegra_bl_prof_start\n", __func__);
+		goto out_err;
 	}
 
-	if (tegra_bl_prof_ro_start != 0 && tegra_bl_prof_ro_size != 0 &&
-			!pfn_valid(__phys_to_pfn(tegra_bl_prof_ro_start))) {
+	pr_info("Remapped tegra_bl_prof_start(0x%llx) "
+		"to address 0x%llx, size(0x%llx)\n",
+		(u64)tegra_bl_prof_start,
+		(__force u64)ptr_bl_prof_carveout,
+		(u64)tegra_bl_prof_size);
+
+	tegra_bl_mapped_prof_start = (__force void *)ptr_bl_prof_carveout;
+
+	if (tegra_bl_prof_ro_start != 0 && tegra_bl_prof_ro_size != 0) {
 		ptr_bl_prof_ro_carveout = ioremap(tegra_bl_prof_ro_start, tegra_bl_prof_ro_size);
 		if (!ptr_bl_prof_ro_carveout) {
 			pr_err("%s: failed to map tegra_bl_prof_ro_start\n", __func__);
@@ -596,9 +589,7 @@ static int __init tegra_bl_args(char *options, phys_addr_t *tegra_bl_arg_size,
 
 	*tegra_bl_arg_size = memparse(p, &p);
 
-	if (!p)
-		return -EINVAL;
-	if (*p != '@')
+	if (!p || *p != '@')
 		return -EINVAL;
 
 	*tegra_bl_arg_start = memparse(p + 1, &p);
@@ -606,16 +597,6 @@ static int __init tegra_bl_args(char *options, phys_addr_t *tegra_bl_arg_size,
 	if (!(*tegra_bl_arg_size) || !(*tegra_bl_arg_start)) {
 		*tegra_bl_arg_size = 0;
 		*tegra_bl_arg_start = 0;
-		return 0;
-	}
-
-	if (pfn_valid(__phys_to_pfn(*tegra_bl_arg_start))) {
-		pr_err("pfn_valid is true for %08llx@%08llx\n",
-			(u64)*tegra_bl_arg_size,
-			(u64)*tegra_bl_arg_start);
-		*tegra_bl_arg_size = 0;
-		*tegra_bl_arg_start = 0;
-		return -ENXIO;
 	}
 
 	return 0;
