@@ -828,15 +828,14 @@ static inline int tegra_spi_ext_clk_enable(bool enable,
 	unsigned long misc_reg = 0;
 	int ret = 0;
 
-	if (tspi->chip_data->new_features) {
-		/* Enable external clock bit in SPI_MISC_REG */
-		if (enable)
-			misc_reg |= SPI_MISC_EXT_CLK_EN;
-		else
-			misc_reg &= (~SPI_MISC_EXT_CLK_EN);
+	/* Enable external clock bit in SPI_MISC_REG */
+	if (enable)
+		misc_reg |= SPI_MISC_EXT_CLK_EN;
+	else
+		misc_reg &= (~SPI_MISC_EXT_CLK_EN);
 
-		tegra_spi_writel(tspi, misc_reg, SPI_MISC_REG);
-	}
+	tegra_spi_writel(tspi, misc_reg, SPI_MISC_REG);
+
 	return ret;
 }
 static int tegra_spi_start_dma_based_transfer(struct
