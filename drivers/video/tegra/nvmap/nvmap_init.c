@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2014-2024, NVIDIA CORPORATION. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2014-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 
@@ -1010,12 +1010,12 @@ static bool nvmap_is_carveout_node_present(void)
 #endif /* NVMAP_LOADABLE_MODULE */
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void nvmap_remove_wrapper(struct platform_device *pdev)
+static void nvmap_remove_wrapper(struct platform_device *pdev)
 {
 	nvmap_remove(pdev);
 }
 #else
-static inline int nvmap_remove_wrapper(struct platform_device *pdev)
+static int nvmap_remove_wrapper(struct platform_device *pdev)
 {
 	return nvmap_remove(pdev);
 }

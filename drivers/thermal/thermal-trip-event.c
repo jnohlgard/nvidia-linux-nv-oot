@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2023-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2023-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <nvidia/conftest.h>
 
@@ -242,12 +242,12 @@ static const struct of_device_id thermal_trip_event_of_match[] = {
 MODULE_DEVICE_TABLE(of, thermal_trip_event_of_match);
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void thermal_trip_event_remove_wrapper(struct platform_device *pdev)
+static void thermal_trip_event_remove_wrapper(struct platform_device *pdev)
 {
 	thermal_trip_event_remove(pdev);
 }
 #else
-static inline int thermal_trip_event_remove_wrapper(struct platform_device *pdev)
+static int thermal_trip_event_remove_wrapper(struct platform_device *pdev)
 {
 	return thermal_trip_event_remove(pdev);
 }

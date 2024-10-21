@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2021-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #define pr_fmt(msg) "Safety I2S: " msg
 
@@ -816,12 +816,12 @@ static int t234_safety_audio_remove(struct platform_device *pdev)
 }
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void t234_safety_audio_remove_wrapper(struct platform_device *pdev)
+static void t234_safety_audio_remove_wrapper(struct platform_device *pdev)
 {
 	t234_safety_audio_remove(pdev);
 }
 #else
-static inline int t234_safety_audio_remove_wrapper(struct platform_device *pdev)
+static int t234_safety_audio_remove_wrapper(struct platform_device *pdev)
 {
 	return t234_safety_audio_remove(pdev);
 }

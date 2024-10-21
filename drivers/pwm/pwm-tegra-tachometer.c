@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2022-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <nvidia/conftest.h>
 
@@ -568,12 +568,12 @@ static const struct of_device_id pwm_tegra_tach_of_match[] = {
 MODULE_DEVICE_TABLE(of, pwm_tegra_tach_of_match);
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void pwm_tegra_tach_remove_wrapper(struct platform_device *pdev)
+static void pwm_tegra_tach_remove_wrapper(struct platform_device *pdev)
 {
 	pwm_tegra_tach_remove(pdev);
 }
 #else
-static inline int pwm_tegra_tach_remove_wrapper(struct platform_device *pdev)
+static int pwm_tegra_tach_remove_wrapper(struct platform_device *pdev)
 {
 	return pwm_tegra_tach_remove(pdev);
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2022-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 /*
  * Maxim MAX77851 Watchdog Driver
  */
@@ -211,12 +211,12 @@ static struct platform_device_id max77851_wdt_devtype[] = {
 };
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void max77851_wdt_remove_wrapper(struct platform_device *pdev)
+static void max77851_wdt_remove_wrapper(struct platform_device *pdev)
 {
 	max77851_wdt_remove(pdev);
 }
 #else
-static inline int max77851_wdt_remove_wrapper(struct platform_device *pdev)
+static int max77851_wdt_remove_wrapper(struct platform_device *pdev)
 {
 	return max77851_wdt_remove(pdev);
 }

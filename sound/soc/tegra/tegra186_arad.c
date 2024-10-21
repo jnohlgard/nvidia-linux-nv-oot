@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2015-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2015-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  * tegra186_arad.c - Tegra186 ARAD driver
  */
@@ -799,12 +799,12 @@ static const struct dev_pm_ops tegra186_arad_pm_ops = {
 };
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void tegra186_arad_platform_remove_wrapper(struct platform_device *pdev)
+static void tegra186_arad_platform_remove_wrapper(struct platform_device *pdev)
 {
 	tegra186_arad_platform_remove(pdev);
 }
 #else
-static inline int tegra186_arad_platform_remove_wrapper(struct platform_device *pdev)
+static int tegra186_arad_platform_remove_wrapper(struct platform_device *pdev)
 {
 	return tegra186_arad_platform_remove(pdev);
 }

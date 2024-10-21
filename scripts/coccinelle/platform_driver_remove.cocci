@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2024-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 // Options: --no-includes --include-headers --smpl-spacing
 
 @match1@
@@ -26,12 +26,12 @@ identifier match1.removefn;
 fresh identifier removefn_wrapper = removefn ## "_wrapper";
 @@
 +#if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-+static inline void removefn_wrapper(struct platform_device *pdev)
++static void removefn_wrapper(struct platform_device *pdev)
 +{
 +	removefn(pdev);
 +}
 +#else
-+static inline int removefn_wrapper(struct platform_device *pdev)
++static int removefn_wrapper(struct platform_device *pdev)
 +{
 +	return removefn(pdev);
 +}
@@ -48,12 +48,12 @@ identifier match2.removefn;
 fresh identifier removefn_wrapper = removefn ## "_wrapper";
 @@
 +#if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-+static inline void removefn_wrapper(struct platform_device *pdev)
++static void removefn_wrapper(struct platform_device *pdev)
 +{
 +	removefn(pdev);
 +}
 +#else
-+static inline int removefn_wrapper(struct platform_device *pdev)
++static int removefn_wrapper(struct platform_device *pdev)
 +{
 +	return removefn(pdev);
 +}

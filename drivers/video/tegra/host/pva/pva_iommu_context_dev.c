@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2022-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  * PVA Application Specific Virtual Memory
  */
@@ -240,12 +240,12 @@ static int __exit pva_iommu_context_dev_remove(struct platform_device *pdev)
 }
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void __exit pva_iommu_context_dev_remove_wrapper(struct platform_device *pdev)
+static void __exit pva_iommu_context_dev_remove_wrapper(struct platform_device *pdev)
 {
 	pva_iommu_context_dev_remove(pdev);
 }
 #else
-static inline int __exit pva_iommu_context_dev_remove_wrapper(struct platform_device *pdev)
+static int __exit pva_iommu_context_dev_remove_wrapper(struct platform_device *pdev)
 {
 	return pva_iommu_context_dev_remove(pdev);
 }

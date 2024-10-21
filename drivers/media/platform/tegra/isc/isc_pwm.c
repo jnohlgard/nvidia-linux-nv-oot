@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2016-2024, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2016-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <nvidia/conftest.h>
 
@@ -255,12 +255,12 @@ static const struct dev_pm_ops isc_pwm_pm_ops = {
 };
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void isc_pwm_remove_wrapper(struct platform_device *pdev)
+static void isc_pwm_remove_wrapper(struct platform_device *pdev)
 {
 	isc_pwm_remove(pdev);
 }
 #else
-static inline int isc_pwm_remove_wrapper(struct platform_device *pdev)
+static int isc_pwm_remove_wrapper(struct platform_device *pdev)
 {
 	return isc_pwm_remove(pdev);
 }

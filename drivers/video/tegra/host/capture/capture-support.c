@@ -2,7 +2,7 @@
 /*
  * Capture support for syncpoint and GoS management
  *
- * SPDX-FileCopyrightText: Copyright (c) 2017-2024, NVIDIA Corporation.  All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  */
 
 #include <nvidia/conftest.h>
@@ -190,12 +190,12 @@ static const struct of_device_id capture_support_match[] = {
 MODULE_DEVICE_TABLE(of, capture_support_match);
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void capture_support_remove_wrapper(struct platform_device *pdev)
+static void capture_support_remove_wrapper(struct platform_device *pdev)
 {
 	capture_support_remove(pdev);
 }
 #else
-static inline int capture_support_remove_wrapper(struct platform_device *pdev)
+static int capture_support_remove_wrapper(struct platform_device *pdev)
 {
 	return capture_support_remove(pdev);
 }

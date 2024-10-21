@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2022-2024 NVIDIA CORPORATION. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 /* The kfuse block stores downstream and upstream HDCP keys for use by HDMI
  * module.
@@ -307,12 +307,12 @@ static const struct of_device_id tegra_kfuse_of_match[] = {
 };
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void tegra_kfuse_remove_wrapper(struct platform_device *pdev)
+static void tegra_kfuse_remove_wrapper(struct platform_device *pdev)
 {
 	tegra_kfuse_remove(pdev);
 }
 #else
-static inline int tegra_kfuse_remove_wrapper(struct platform_device *pdev)
+static int tegra_kfuse_remove_wrapper(struct platform_device *pdev)
 {
 	return tegra_kfuse_remove(pdev);
 }

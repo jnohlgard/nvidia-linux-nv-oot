@@ -2,7 +2,7 @@
 /*
  * PCIe driver to enumerate PCIe virtual functions in VM.
  *
- * SPDX-FileCopyrightText: Copyright (c) 2021-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  */
 
@@ -145,12 +145,12 @@ static const struct of_device_id pci_tegra_vf_of_match[] = {
 MODULE_DEVICE_TABLE(of, pci_tegra_vf_of_match);
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void pci_tegra_vf_remove_wrapper(struct platform_device *pdev)
+static void pci_tegra_vf_remove_wrapper(struct platform_device *pdev)
 {
 	pci_tegra_vf_remove(pdev);
 }
 #else
-static inline int pci_tegra_vf_remove_wrapper(struct platform_device *pdev)
+static int pci_tegra_vf_remove_wrapper(struct platform_device *pdev)
 {
 	return pci_tegra_vf_remove(pdev);
 }

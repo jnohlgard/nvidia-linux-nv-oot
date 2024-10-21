@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2021-2024, NVIDIA CORPORATION & AFFILIATES. All Rights Reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  */
 
 #include <nvidia/conftest.h>
@@ -737,12 +737,12 @@ static const struct dev_pm_ops nvjpg_pm_ops = {
 };
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void nvjpg_remove_wrapper(struct platform_device *pdev)
+static void nvjpg_remove_wrapper(struct platform_device *pdev)
 {
 	nvjpg_remove(pdev);
 }
 #else
-static inline int nvjpg_remove_wrapper(struct platform_device *pdev)
+static int nvjpg_remove_wrapper(struct platform_device *pdev)
 {
 	return nvjpg_remove(pdev);
 }

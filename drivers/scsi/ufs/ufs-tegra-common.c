@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2015-2024 NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2015-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <nvidia/conftest.h>
 
@@ -1949,12 +1949,12 @@ static const struct dev_pm_ops ufs_tegra_pm_ops = {
 };
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void ufs_tegra_remove_wrapper(struct platform_device *pdev)
+static void ufs_tegra_remove_wrapper(struct platform_device *pdev)
 {
 	ufs_tegra_remove(pdev);
 }
 #else
-static inline int ufs_tegra_remove_wrapper(struct platform_device *pdev)
+static int ufs_tegra_remove_wrapper(struct platform_device *pdev)
 {
 	return ufs_tegra_remove(pdev);
 }

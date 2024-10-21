@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2013-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2013-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  */
 
 #include <nvidia/conftest.h>
@@ -709,12 +709,12 @@ static const struct of_device_id tegra_dpaux_of_match[] = {
 MODULE_DEVICE_TABLE(of, tegra_dpaux_of_match);
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void tegra_dpaux_remove_wrapper(struct platform_device *pdev)
+static void tegra_dpaux_remove_wrapper(struct platform_device *pdev)
 {
 	tegra_dpaux_remove(pdev);
 }
 #else
-static inline int tegra_dpaux_remove_wrapper(struct platform_device *pdev)
+static int tegra_dpaux_remove_wrapper(struct platform_device *pdev)
 {
 	return tegra_dpaux_remove(pdev);
 }

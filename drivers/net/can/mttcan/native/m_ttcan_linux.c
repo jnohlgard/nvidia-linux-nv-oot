@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2022-2024, NVIDIA CORPORATION & AFFILIATES. All Rights Reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <nvidia/conftest.h>
 
@@ -2008,12 +2008,12 @@ static int mttcan_resume(struct platform_device *pdev)
 #endif
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void mttcan_remove_wrapper(struct platform_device *pdev)
+static void mttcan_remove_wrapper(struct platform_device *pdev)
 {
 	mttcan_remove(pdev);
 }
 #else
-static inline int mttcan_remove_wrapper(struct platform_device *pdev)
+static int mttcan_remove_wrapper(struct platform_device *pdev)
 {
 	return mttcan_remove(pdev);
 }

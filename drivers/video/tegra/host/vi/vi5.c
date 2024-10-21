@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// SPDX-FileCopyrightText: Copyright (c) 2017-2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2017-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 /*
  * VI5 driver
  */
@@ -432,12 +432,12 @@ const struct dev_pm_ops vi_pm_ops = {
 };
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void vi5_remove_wrapper(struct platform_device *pdev)
+static void vi5_remove_wrapper(struct platform_device *pdev)
 {
 	vi5_remove(pdev);
 }
 #else
-static inline int vi5_remove_wrapper(struct platform_device *pdev)
+static int vi5_remove_wrapper(struct platform_device *pdev)
 {
 	return vi5_remove(pdev);
 }

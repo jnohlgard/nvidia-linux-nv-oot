@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2022-2024 NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+ * SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
  *
  * Tegra TSEC Module Support
  */
@@ -463,12 +463,12 @@ static int tsec_remove(struct platform_device *dev)
 }
 
 #if defined(NV_PLATFORM_DRIVER_STRUCT_REMOVE_RETURNS_VOID) /* Linux v6.11 */
-static inline void tsec_remove_wrapper(struct platform_device *pdev)
+static void tsec_remove_wrapper(struct platform_device *pdev)
 {
 	tsec_remove(pdev);
 }
 #else
-static inline int tsec_remove_wrapper(struct platform_device *pdev)
+static int tsec_remove_wrapper(struct platform_device *pdev)
 {
 	return tsec_remove(pdev);
 }
