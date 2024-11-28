@@ -1,9 +1,5 @@
-#
-# Makefile for tegra cec support.
-#
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (c) 2022-2024, NVIDIA CORPORATION.  All rights reserved.
 
 subdir-ccflags-y	= -Werror
-
-ccflags-y += -I$(overlay)/drivers/video/tegra/dc
-
-obj-$(CONFIG_TEGRA_CEC_SUPPORT)	+= tegra_cec.o
+obj-m += tegra_cec.o
