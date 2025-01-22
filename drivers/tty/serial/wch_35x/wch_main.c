@@ -1,49 +1,7 @@
 /*
- * PCI/PCIE to serial driver for ch351/352/353/355/356/357/358/359/382/384, etc.
- *
- * Copyright (C) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
- * Web: http://wch.cn
- * Author: WCH <tech@wch.cn>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * Update Log:
- * V1.00 - initial version
- * V1.10 - fixed uart send bugs
- * V1.11 - fixed the issue of serial ports number creation
- * V1.12 - fixed modem signals support
- * V1.13 - added automatic frequency multiplication when using baud rates higher than 115200bps
-                 - added mutex protection in uart transmit process
- * V1.14 - optimized the processing of serial ports in interruption
- * V1.15 - added support for non-standard baud rate
- * V1.16 - fixed uart clock frequency multiplication bugs
- * V1.17 - modified uart data received process
- * V1.18 - changed uart fifo trigger level
-         - changed uart transmission to half of the fifo size
- * V1.19 - fixed ch358 uart0 setting bug
- * V1.20 - added pre-load driver
- * V1.21 - fixed modem setting when disable hardflow
- * V1.22 - added support for rs485 configuration
- * V1.23 - added supports for kernel version beyond 5.14.x
- * V1.24 - fixed ch351/2/3 uart0 setting bug, merged pre-load driver
+ * SPDX-FileCopyrightText: Copyright (c) 2023-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: GPL-2.0-only
  */
-
-/*
- * Copyright (c) 2021-2023, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
-
 
 #include "wch_common.h"
 
