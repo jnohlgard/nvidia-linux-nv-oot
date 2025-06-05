@@ -2589,11 +2589,11 @@ static int ether_open(struct net_device *dev)
 	int ret = 0, i;
 
 	/* Reset the PHY */
-	if (gpio_is_valid(pdata->phy_reset)) {
-		gpio_set_value(pdata->phy_reset, 0);
+	if (pdata->phy_reset) {
+		gpiod_set_value_cansleep(pdata->phy_reset, 1);
 		usleep_range(pdata->phy_reset_duration,
 			     pdata->phy_reset_duration + 1);
-		gpio_set_value(pdata->phy_reset, 1);
+		gpiod_set_value_cansleep(pdata->phy_reset, 0);
 		msleep(pdata->phy_reset_post_delay);
 	}
 
@@ -2795,8 +2795,8 @@ err_xpcs_rst:
 	}
 err_mac_rst:
 	ether_disable_clks(pdata);
-	if (gpio_is_valid(pdata->phy_reset)) {
-		gpio_set_value(pdata->phy_reset, OSI_DISABLE);
+	if (pdata->phy_reset) {
+		gpiod_set_value_cansleep(pdata->phy_reset, 1);
 	}
 err_en_clks:
 err_get_sync:
@@ -2978,8 +2978,8 @@ static int ether_close(struct net_device *ndev)
 		phy_stop(pdata->phydev);
 		phy_disconnect(pdata->phydev);
 
-		if (gpio_is_valid(pdata->phy_reset)) {
-			gpio_set_value(pdata->phy_reset, 0);
+		if (pdata->phy_reset) {
+			gpiod_set_value_cansleep(pdata->phy_reset, 1);
 		}
 		pdata->phydev = NULL;
 	}
@@ -5234,14 +5234,12 @@ static int ether_configure_car(struct platform_device *pdev,
 			       struct ether_priv_data *pdata)
 {
 	struct device *dev = pdata->dev;
-	struct device_node *np = dev->of_node;
 	struct osi_core_priv_data *osi_core = pdata->osi_core;
 #ifndef OSI_STRIPPED_LIB
 	unsigned long csr_clk_rate = 0;
 	struct osi_ioctl ioctl_data = {};
 #endif /* !OSI_STRIPPED_LIB */
 	int ret = 0;
-
 
 	/* get MAC reset */
 	if (!pdata->skip_mac_reset) {
@@ -5265,28 +5263,22 @@ static int ether_configure_car(struct platform_device *pdev,
 	}
 
 	/* get PHY reset */
-	pdata->phy_reset = of_get_named_gpio(np, "nvidia,phy-reset-gpio", 0);
-	if (pdata->phy_reset < 0) {
-		if (pdata->phy_reset == -EPROBE_DEFER)
-			return pdata->phy_reset;
-		else
-			dev_info(dev, "failed to get phy reset gpio error: %d\n",
-				pdata->phy_reset);
+	pdata->phy_reset = devm_gpiod_get_optional(dev, "nvidia,phy-reset", GPIOD_OUT_HIGH);
+	if (IS_ERR(pdata->phy_reset)) {
+		ret = PTR_ERR(pdata->phy_reset);
+		pdata->phy_reset = NULL;
+		if (ret == -EPROBE_DEFER)
+			return ret;
+		dev_info(dev, "failed to get phy reset gpio error: %d\n", ret);
+		goto exit;
 	}
 
-	if (gpio_is_valid(pdata->phy_reset)) {
-		ret = devm_gpio_request_one(dev, (unsigned int)pdata->phy_reset,
-					    GPIOF_OUT_INIT_HIGH,
-					    "phy_reset");
-		if (ret < 0) {
-			dev_err(dev, "failed to request PHY reset gpio\n");
-			goto exit;
-		}
-
-		gpio_set_value(pdata->phy_reset, 0);
+	if (pdata->phy_reset) {
+		gpiod_set_consumer_name(pdata->phy_reset, "nvethernet,phy-reset");
+		gpiod_set_value_cansleep(pdata->phy_reset, 1);
 		usleep_range(pdata->phy_reset_duration,
 			     pdata->phy_reset_duration + 1);
-		gpio_set_value(pdata->phy_reset, 1);
+		gpiod_set_value_cansleep(pdata->phy_reset, 0);
 		msleep(pdata->phy_reset_post_delay);
 	}
 
@@ -5343,8 +5335,8 @@ err_enable_clks:
 err_set_ptp_rate:
 	ether_put_clks(pdata);
 err_get_clks:
-	if (gpio_is_valid(pdata->phy_reset)) {
-		gpio_set_value(pdata->phy_reset, OSI_DISABLE);
+	if (pdata->phy_reset) {
+		gpiod_set_value_cansleep(pdata->phy_reset, 1);
 	}
 exit:
 	return ret;
@@ -6706,8 +6698,8 @@ static int ether_probe(struct platform_device *pdev)
 		 "%s (HW ver: %02x) created with %u DMA channels\n",
 		 netdev_name(ndev), osi_core->mac_ver, num_dma_chans);
 
-	if (gpio_is_valid(pdata->phy_reset)) {
-		gpio_set_value(pdata->phy_reset, OSI_DISABLE);
+	if (pdata->phy_reset) {
+		gpiod_set_value_cansleep(pdata->phy_reset, 1);
 	}
 	/* Initialization of delayed workqueue */
 	INIT_DELAYED_WORK(&pdata->ether_stats_work, ether_stats_work_func);
@@ -6751,8 +6743,8 @@ err_netdev:
 err_dma_mask:
 	ether_disable_clks(pdata);
 	ether_put_clks(pdata);
-	if (gpio_is_valid(pdata->phy_reset)) {
-		gpio_set_value(pdata->phy_reset, OSI_DISABLE);
+	if (pdata->phy_reset) {
+		gpiod_set_value_cansleep(pdata->phy_reset, 1);
 	}
 err_init_res:
 err_parse_dt:
@@ -6964,8 +6956,8 @@ static int ether_suspend_noirq(struct device *dev)
 #endif
 	if (pdata->phydev && !(device_may_wakeup(&ndev->dev))) {
 		phy_stop(pdata->phydev);
-		if (gpio_is_valid(pdata->phy_reset))
-			gpio_set_value(pdata->phy_reset, 0);
+		if (pdata->phy_reset)
+			gpiod_set_value(pdata->phy_reset, 1);
 	}
 
 	netif_tx_disable(ndev);
@@ -7022,10 +7014,9 @@ static int ether_resume_noirq(struct device *dev)
 		return 0;
 
 	if (!device_may_wakeup(&ndev->dev) &&
-	    gpio_is_valid(pdata->phy_reset) &&
-	    !gpio_get_value(pdata->phy_reset)) {
+	    pdata->phy_reset) {
 		/* deassert phy reset */
-		gpio_set_value(pdata->phy_reset, 1);
+		gpiod_set_value(pdata->phy_reset, 0);
 	}
 
 	ret = ether_resume(pdata);

@@ -501,7 +501,7 @@ struct ether_priv_data {
 	/** Previous detected mode */
 	int oldduplex;
 	/** Reset for PHY */
-	int phy_reset;
+	struct gpio_desc *phy_reset;
 	/** Rx IRQ alloc mask */
 	unsigned int rx_irq_alloc_mask;
 	/** Tx IRQ alloc mask */
