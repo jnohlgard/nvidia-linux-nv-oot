@@ -3281,7 +3281,8 @@ static int ether_create_debugfs(struct ether_priv_data *pdata)
 	char *buf;
 	int ret = 0;
 
-	buf = kasprintf(GFP_KERNEL, "nvethernet-%s", pdata->ndev->name);
+	buf = kasprintf(GFP_KERNEL, "nvethernet-%d", pdata->ndev->ifindex);
+
 	if (!buf)
 		return -ENOMEM;
 
