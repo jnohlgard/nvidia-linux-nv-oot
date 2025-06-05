@@ -3347,13 +3347,8 @@ int ether_sysfs_register(struct ether_priv_data *pdata)
 	struct device *dev = pdata->dev;
 #ifndef OSI_STRIPPED_LIB
 #ifdef CONFIG_DEBUG_FS
-	int ret = 0;
-
-	if (debugfs_initialized()) {
-		ret = ether_create_debugfs(pdata);
-		if (ret < 0)
-			return ret;
-	}
+	if (debugfs_initialized())
+		ether_create_debugfs(pdata);
 #endif
 #endif /* OSI_STRIPPED_LIB */
 
