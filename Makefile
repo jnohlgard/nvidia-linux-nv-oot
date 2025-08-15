@@ -22,7 +22,9 @@ endif
 obj-m += drivers/
 
 ifdef CONFIG_SND_SOC
+ifdef CONFIG_SND_SOC_TEGRA
 obj-m += sound/soc/tegra/
+endif
 obj-m += sound/tegra-safety-audio/
 obj-m += sound/soc/tegra-virt-alt/
 endif

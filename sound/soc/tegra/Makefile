@@ -21,12 +21,16 @@ snd-soc-tegra210-ope-objs		:= tegra210_ope.o tegra210_peq.o \
 					   tegra210_mbdrc.o
 snd-soc-tegra-machine-driver-objs	:= tegra_machine_driver.o
 
+ifdef CONFIG_SND_SIMPLE_CARD_UTILS
 obj-m += snd-soc-tegra-utils.o
+endif
 obj-m += snd-soc-tegra210-dmic.o
 obj-m += snd-soc-tegra210-ahub.o
 obj-m += snd-soc-tegra210-i2s.o
 obj-m += snd-soc-tegra186-dspk.o
+ifdef CONFIG_SND_SIMPLE_CARD_UTILS
 obj-m += snd-soc-tegra210-admaif.o
+endif
 obj-m += snd-soc-tegra210-amx.o
 obj-m += snd-soc-tegra210-adx.o
 obj-m += snd-soc-tegra210-mixer.o
@@ -37,4 +41,6 @@ obj-m += snd-soc-tegra210-iqc.o
 obj-m += snd-soc-tegra210-ope.o
 obj-m += snd-soc-tegra186-arad.o
 obj-m += snd-soc-tegra186-asrc.o
+ifdef CONFIG_SND_SIMPLE_CARD_UTILS
 obj-m += snd-soc-tegra-machine-driver.o
+endif
